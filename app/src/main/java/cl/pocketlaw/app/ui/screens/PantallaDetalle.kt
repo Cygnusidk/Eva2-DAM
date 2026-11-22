@@ -37,6 +37,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -66,11 +68,23 @@ fun PantallaDetalle(normaId: String, volver: () -> Unit, vm: EstudioViewModel = 
     val norma = vm.norma(normaId)
     var mostrarDialogo by remember { mutableStateOf(false) }
     var historialVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(normaId) { vm.filtrarAnio(null) }
+    LaunchedEffect(normaId) {
+        vm.filtrarAnio(null)
+        vm.cargarDestacados(normaId)
+    }
+    val mensajes = remember { SnackbarHostState() }
+    val error = vm.mensajeError
+    LaunchedEffect(error) {
+        if (error != null) {
+            mensajes.showSnackbar(error)
+            vm.descartarError()
+        }
+    }
     val flujoDestacados = remember(normaId) { vm.destacadosDe(normaId) }
     val destacados by flujoDestacados.collectAsStateWithLifecycle(initialValue = emptySet<Int>())
 
     Scaffold(
+        snackbarHost = { SnackbarHost(mensajes) },
         topBar = {
             TopAppBar(
                 title = { Text(norma?.nombreCorto ?: "Norma", fontFamily = FontFamily.Serif) },

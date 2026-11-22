@@ -6,7 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cl.pocketlaw.app.data.local.Usuario
-import cl.pocketlaw.app.data.repository.Repositorio
+import cl.pocketlaw.app.data.repository.ResultadoAuth
+import cl.pocketlaw.app.data.repository.UsuariosRepository
 import cl.pocketlaw.app.util.Validadores
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +34,9 @@ data class FormAuth(
     val cargando: Boolean = false
 )
 
-class AuthViewModel(private val repositorio: Repositorio) : ViewModel() {
+class AuthViewModel(private val repositorio: UsuariosRepository) : ViewModel() {
+
+    private val mensajeSinConexion = "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo."
 
     val sesion: StateFlow<EstadoSesion> = repositorio.sesion
         .map<Usuario?, EstadoSesion> { if (it == null) EstadoSesion.SinSesion else EstadoSesion.Activa(it) }
@@ -85,12 +88,16 @@ class AuthViewModel(private val repositorio: Repositorio) : ViewModel() {
 
         viewModelScope.launch {
             form = form.copy(cargando = true, mensaje = null)
-            val correcto = repositorio.iniciarSesion(form.correo, form.clave)
+            val resultado = repositorio.iniciarSesion(form.correo, form.clave)
             form = form.copy(
                 cargando = false,
-                mensaje = if (correcto) null else "Correo o contraseña incorrectos"
+                mensaje = when (resultado) {
+                    ResultadoAuth.EXITO -> null
+                    ResultadoAuth.RECHAZADO -> "Correo o contraseña incorrectos"
+                    ResultadoAuth.ERROR -> mensajeSinConexion
+                }
             )
-            if (correcto) alExito()
+            if (resultado == ResultadoAuth.EXITO) alExito()
         }
     }
 
@@ -109,12 +116,13 @@ class AuthViewModel(private val repositorio: Repositorio) : ViewModel() {
 
         viewModelScope.launch {
             form = form.copy(cargando = true, mensaje = null)
-            val creado = repositorio.registrar(form.nombre, form.correo, form.clave)
+            val resultado = repositorio.registrar(form.nombre, form.correo, form.clave)
             form = form.copy(
                 cargando = false,
-                errorCorreo = if (creado) null else "Este correo ya está registrado"
+                errorCorreo = if (resultado == ResultadoAuth.RECHAZADO) "Este correo ya está registrado" else form.errorCorreo,
+                mensaje = if (resultado == ResultadoAuth.ERROR) mensajeSinConexion else null
             )
-            if (creado) alExito()
+            if (resultado == ResultadoAuth.EXITO) alExito()
         }
     }
 }

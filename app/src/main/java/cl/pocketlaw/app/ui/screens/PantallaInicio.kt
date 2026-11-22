@@ -45,12 +45,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.pocketlaw.app.data.model.Norma
 import cl.pocketlaw.app.util.Notificaciones
+import cl.pocketlaw.app.ui.components.TarjetaIndicadores
+import cl.pocketlaw.app.ui.components.rememberFabrica
 import cl.pocketlaw.app.viewmodel.EstudioViewModel
+import cl.pocketlaw.app.viewmodel.IndicadoresViewModel
 
 @Composable
-fun PantallaInicio(vm: EstudioViewModel, abrirNorma: (String) -> Unit) {
+fun PantallaInicio(
+    vm: EstudioViewModel,
+    abrirNorma: (String) -> Unit,
+    indicadoresVm: IndicadoresViewModel = viewModel(factory = rememberFabrica())
+) {
     val normas by vm.normas.collectAsStateWithLifecycle()
     val busqueda by vm.busqueda.collectAsStateWithLifecycle()
     val nombre by vm.nombreUsuario.collectAsStateWithLifecycle()
@@ -85,6 +93,9 @@ fun PantallaInicio(vm: EstudioViewModel, abrirNorma: (String) -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+        }
+        item {
+            TarjetaIndicadores(estado = indicadoresVm.estado, reintentar = indicadoresVm::cargar)
         }
         item {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

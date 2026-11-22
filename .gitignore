@@ -8,3 +8,10 @@
 /captures/
 .externalNativeBuild/
 .cxx/
+
+# Microservicios
+backend/**/target/
+backend/**/data/
+
+
+/app/release/

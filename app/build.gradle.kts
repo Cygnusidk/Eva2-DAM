@@ -5,6 +5,8 @@ plugins {
     id("com.google.devtools.ksp")
 }
 
+val backendHost = (project.findProperty("backendHost") as String?) ?: "10.0.2.2"
+
 android {
     namespace = "cl.pocketlaw.app"
     compileSdk = 34
@@ -13,13 +15,27 @@ android {
         applicationId = "cl.pocketlaw.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "2.0"
+
+        buildConfigField("String", "URL_USUARIOS", "\"http://$backendHost:8081/\"")
+        buildConfigField("String", "URL_ESTUDIO", "\"http://$backendHost:8082/\"")
+    }
+
+
+    signingConfigs {
+        create("release") {
+            storeFile = rootProject.file("pocketlaw.jks")
+            storePassword = "pocketlaw2026"
+            keyAlias = "pocketlaw"
+            keyPassword = "pocketlaw2026"
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -31,6 +47,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -48,4 +65,19 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
     implementation("io.coil-kt:coil-compose:2.7.0")
+
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
+}
+
+tasks.withType<Test>().configureEach {
+    testLogging {
+        events("passed", "failed", "skipped")
+        showStandardStreams = true
+    }
 }

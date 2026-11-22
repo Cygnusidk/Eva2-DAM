@@ -18,10 +18,13 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,10 +51,21 @@ fun PantallaPrincipal(
     var pestana by rememberSaveable { mutableIntStateOf(0) }
     var mostrarDialogo by remember { mutableStateOf(false) }
 
+    val mensajes = remember { SnackbarHostState() }
+    val error = estudioVm.mensajeError
+
+    LaunchedEffect(error) {
+        if (error != null) {
+            mensajes.showSnackbar(error)
+            estudioVm.descartarError()
+        }
+    }
+
     val titulos = listOf("Inicio", "Mis notas", "Perfil")
     val iconos = listOf(Icons.Default.Home, Icons.Default.EditNote, Icons.Default.Person)
 
     Scaffold(
+        snackbarHost = { SnackbarHost(mensajes) },
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text(titulos[pestana], fontFamily = FontFamily.Serif) },

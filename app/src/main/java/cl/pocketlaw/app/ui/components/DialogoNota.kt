@@ -29,11 +29,13 @@ import cl.pocketlaw.app.viewmodel.EstudioViewModel
 fun DialogoNota(normaFija: String?, vm: EstudioViewModel, cerrar: () -> Unit) {
     var normaElegida by remember { mutableStateOf(normaFija ?: vm.catalogo.first().id) }
 
-    LaunchedEffect(Unit) { vm.limpiarNota() }
+    val editando = vm.notaEnEdicion != null
+
+    LaunchedEffect(Unit) { if (!editando) vm.limpiarNota() }
 
     AlertDialog(
         onDismissRequest = cerrar,
-        title = { Text("Nueva nota") },
+        title = { Text(if (editando) "Editar nota" else "Nueva nota") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (normaFija == null) {
@@ -62,7 +64,10 @@ fun DialogoNota(normaFija: String?, vm: EstudioViewModel, cerrar: () -> Unit) {
             }
         },
         confirmButton = {
-            TextButton(onClick = { vm.guardarNota(normaElegida, cerrar) }) { Text("Guardar") }
+            TextButton(
+                onClick = { vm.guardarNota(normaElegida, cerrar) },
+                enabled = !vm.guardandoNota
+            ) { Text(if (vm.guardandoNota) "Guardando..." else "Guardar") }
         },
         dismissButton = {
             TextButton(onClick = cerrar) { Text("Cancelar") }
