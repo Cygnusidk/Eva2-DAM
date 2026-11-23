@@ -40,7 +40,7 @@ public class NotaService {
     }
 
     public void eliminar(Long id) {
-        if (!repositorio.existsById(id)) {
+        if (repositorio.findById(id).isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Nota no encontrada");
         }
         repositorio.deleteById(id);

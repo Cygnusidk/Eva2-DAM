@@ -1,34 +1,27 @@
 package cl.pocketlaw.usuarios.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/** Usuario registrado en PocketLaw. La contraseña se guarda solo como hash BCrypt. */
-@Entity
-@Table(name = "usuarios")
+/**
+ * Usuario registrado en PocketLaw, tal como se guarda en la tabla "usuarios" de Xano.
+ * La contrasena se guarda solo como hash BCrypt. Xano usa snake_case (clave_hash, tamano_letra).
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Usuario {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
     private String nombre;
-
-    @Column(nullable = false, unique = true)
     private String correo;
 
-    @Column(nullable = false)
+    @JsonAlias("clave_hash")
     private String claveHash;
 
-    @Column(nullable = false)
+    @JsonAlias("tamano_letra")
     private float tamanoLetra = 16f;
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getCorreo() { return correo; }

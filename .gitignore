@@ -15,3 +15,5 @@ backend/**/data/
 
 
 /app/release/
+
+backend/**/xano.properties

@@ -1,0 +1,2 @@
+# Copia este archivo como xano.properties y pega la Base URL de tu API Group de Xano (sin / al final)
+xano.base-url=https://TU-INSTANCIA.n7.xano.io/api:XXXXXXXX

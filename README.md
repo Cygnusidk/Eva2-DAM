@@ -5,7 +5,7 @@ PocketLaw es una aplicación móvil para Android orientada al estudio y la consu
 El proyecto está formado por dos partes:
 
 - **App móvil** (carpeta `app`): Kotlin con Jetpack Compose.
-- **Microservicios** (carpeta `backend`): dos servicios en Spring Boot con base de datos propia.
+- **Microservicios** (carpeta `backend`): dos servicios en Spring Boot que guardan sus datos en una base de datos en la nube (Xano).
 
 ## Integrantes
 
@@ -93,8 +93,9 @@ Cada microservicio se organiza en capas, dentro de `src/main/java`:
 |---|---|
 | `controller` | Recibe las peticiones HTTP y responde. No tiene lógica |
 | `service` | Aplica las reglas (correo repetido, cifrar la clave, nota inexistente) |
-| `repository` | Consulta y guarda en la base de datos con Spring Data JPA |
-| `model` | Entidades de la base de datos y objetos de entrada y salida |
+| `repository` | Consulta y guarda los datos en las tablas de Xano mediante su API REST |
+| `model` | Datos que se leen de Xano y objetos de entrada y salida |
+| `xano` | Configuración del cliente HTTP hacia Xano y manejo de errores (502 si Xano no responde) |
 
 ## Endpoints utilizados
 
@@ -136,7 +137,7 @@ En total son 11 endpoints propios y 1 externo. No requiere llave de acceso.
 - Navigation Compose 2.8.0 y Lifecycle 2.8.6
 - Coil 2.7.0 para mostrar la foto de perfil
 - Pruebas: JUnit 4.13.2, kotlinx-coroutines-test 1.9.0 y MockWebServer 4.12.0
-- Microservicios: Spring Boot 3.3.5, Java 17, Spring Data JPA y base de datos H2 en archivo
+- Microservicios: Spring Boot 3.3.5, Java 17 y Xano (base de datos en la nube, consumida con RestClient)
 - minSdk 26, targetSdk 34 y compileSdk 34
 - Android Studio con JetBrains Runtime 25.0.4+-16339643-b508.27 amd64. Gradle se ejecuta con JDK 21.
 
@@ -154,7 +155,9 @@ cd backend/estudio-service
 mvn spring-boot:run
 ```
 
-Cada servicio crea su base de datos en una carpeta `data` la primera vez que se ejecuta. Para revisar los datos se puede entrar a `http://localhost:8081/h2-console` y `http://localhost:8082/h2-console` (JDBC URL `jdbc:h2:file:./data/usuarios` o `jdbc:h2:file:./data/estudio`, usuario `sa`, sin contraseña).
+Los datos se guardan en Xano, así que se necesita conexión a internet. Cada servicio lee la dirección de su base en el archivo `xano.properties` (se encuentra junto al `pom.xml` de cada servicio y no se sube al repositorio público; se puede copiar desde `xano.properties.example`). También sirve la variable de entorno `XANO_BASE_URL`. Hay que ejecutar los comandos desde la carpeta de cada servicio para que se lea ese archivo.
+
+Las tablas de Xano son `usuarios` (`nombre`, `correo`, `clave_hash`, `tamano_letra`), `notas` (`usuario_id`, `norma_id`, `texto`, `fecha`) y `destacados` (`usuario_id`, `norma_id`, `articulo`). Los datos se pueden revisar directamente en el panel de Xano.
 
 ### 2. Ejecutar la aplicación
 

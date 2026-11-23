@@ -1,32 +1,24 @@
 package cl.pocketlaw.estudio.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@Entity
-@Table(name = "destacados",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"usuarioId", "normaId", "articulo"}))
+/** Articulo destacado, guardado en la tabla "destacados" de Xano. */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Destacado {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @JsonAlias("usuario_id")
     private Long usuarioId;
 
-    @Column(nullable = false)
+    @JsonAlias("norma_id")
     private String normaId;
 
-    @Column(nullable = false)
     private int articulo;
 
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public Long getUsuarioId() { return usuarioId; }
     public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
     public String getNormaId() { return normaId; }
