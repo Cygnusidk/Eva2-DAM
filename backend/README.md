@@ -22,8 +22,8 @@ destacados sin duplicar) y guardan los datos en tablas de Xano mediante su API R
 
 ## Ejecutar
 ```
-cd usuarios-service && mvn spring-boot:run
-cd estudio-service  && mvn spring-boot:run     (en otra terminal)
+cd backend/usuarios-service && .\mvnw.cmd spring-boot:run
+cd backend/estudio-service  && .\mvnw.cmd spring-boot:run     (en otra terminal)
 ```
 Ejecuta desde la carpeta de cada servicio para que se lea su `xano.properties`.
 

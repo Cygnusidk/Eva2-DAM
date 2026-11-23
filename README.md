@@ -149,10 +149,10 @@ Se necesita JDK 17 y Maven (o abrir cada carpeta en IntelliJ). En dos terminales
 
 ```
 cd backend/usuarios-service
-mvn spring-boot:run
+.\mvnw.cmd spring-boot:run 
 
 cd backend/estudio-service
-mvn spring-boot:run
+.\mvnw.cmd spring-boot:run 
 ```
 
 Los datos se guardan en Xano, así que se necesita conexión a internet. Cada servicio lee la dirección de su base en el archivo `xano.properties` (se encuentra junto al `pom.xml` de cada servicio y no se sube al repositorio público; se puede copiar desde `xano.properties.example`). También sirve la variable de entorno `XANO_BASE_URL`. Hay que ejecutar los comandos desde la carpeta de cada servicio para que se lea ese archivo.
@@ -204,8 +204,4 @@ Para generarlo:
 
 El archivo queda en `app/build/outputs/apk/release/app-release.apk`.
 
-Capturas del APK firmado y de la llave:
 
-![APK firmado](docs/apk-firmado.png)
-
-![Llave jks](docs/llave-jks.png)
